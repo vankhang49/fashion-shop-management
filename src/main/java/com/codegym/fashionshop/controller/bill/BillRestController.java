@@ -15,6 +15,7 @@ import com.codegym.fashionshop.service.product.IPricingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
@@ -58,6 +59,23 @@ public class BillRestController {
             throw new HttpExceptions.NotFoundException("Không tìm thấy thông tin hóa đơn");
         }
         return new ResponseEntity<>(bills, HttpStatus.OK);
+    }
+
+    /**
+     * Find bill entity by date create.
+     *
+     * @param dateCreate the date of creation
+     * @Return the bill correct with creation date
+     * @author KhangDV
+     */
+    @PreAuthorize("hasAnyRole('ROLE_SALESMAN', 'ROLE_WAREHOUSE', 'ROLE_MANAGER', 'ROLE_ADMIN')")
+    @GetMapping("/find-bill")
+    public ResponseEntity<?> getBillByDateCreate(@RequestParam("dateCreate") LocalDate dateCreate) {
+        Bill bill = billService.findBillByDateCreate(dateCreate);
+        if (bill == null) {
+            return ResponseEntity.status(404).body("Không tìm thấy thông tin đơn hàng!");
+        }
+        return ResponseEntity.status(200).body(bill);
     }
 
     /**

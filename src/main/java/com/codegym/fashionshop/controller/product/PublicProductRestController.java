@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/public/product")
-
 public class PublicProductRestController {
 
     @Autowired

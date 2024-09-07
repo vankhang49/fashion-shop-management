@@ -59,6 +59,19 @@ public class BillService implements IBillService {
         repository.save(bill);
         repository.updateAccumulatedPoints(bill.getCustomer().getCustomerId(), pointsToAdd);
     }
+
+    /**
+     * Find bill entity by date create.
+     *
+     * @param dateCreate the date of creation
+     * @Return the bill correct with creation date
+     * @author KhangDV
+     */
+    @Override
+    public Bill findBillByDateCreate(LocalDate dateCreate) {
+        return repository.findByDateCreate(dateCreate);
+    }
+
     /**
      * Finds all bills in the system.
      *

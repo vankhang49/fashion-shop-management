@@ -16,7 +16,6 @@ import java.util.List;
  * Author: KhangDV
  */
 @RestController
-
 @RequestMapping("/api/auth/dashboard")
 public class DashboardController {
     @Autowired

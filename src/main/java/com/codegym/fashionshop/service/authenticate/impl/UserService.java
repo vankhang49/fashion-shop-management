@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -49,13 +48,14 @@ public class UserService implements IAppUserService {
     /**
      * Searches for {@link AppUser} entities by username, user code, or role name, returning a paginated result.
      *
-     * @param searchContent The search content to match against usernames, user codes, or role names.
+     * @param searchContent The search content to match against usernames or user codes
+     * @param roleName      The search content to match against role names.
      * @param pageable      The pagination information.
      * @return An {@link AuthenticationResponse} containing the status code and a list of matching {@link AppUser} entities.
      */
     @Override
-    public AuthenticationResponse searchAllByFullNameOrUserCodeOrRoleName(String searchContent, Pageable pageable) {
-        Page<AppUser> users = userRepository.searchAppUserByFullNameOrUserCodeOrRoleName(searchContent, pageable);
+    public AuthenticationResponse searchAllByFullNameOrUserCodeAndRoleName(String searchContent, String roleName, Pageable pageable) {
+        Page<AppUser> users = userRepository.searchAppUserByFullNameOrUserCodeAndRoleName(searchContent, roleName, pageable);
         if (users == null || users.getTotalElements() == 0) {
             return AuthenticationResponse.builder()
                     .statusCode(404)

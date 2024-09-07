@@ -59,7 +59,6 @@ public class AuthenticationService {
             return AuthenticationResponse.builder()
                     .statusCode(200)
                     .token(jwtToken)
-                    .userId(user.getUserId())
                     .fullName(user.getFullName())
                     .avatar(user.getAvatar())
                     .message("Đăng nhập thành công!!!")

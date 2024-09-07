@@ -3,6 +3,7 @@ package com.codegym.fashionshop.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -11,10 +12,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-
 @Configuration
 @EnableWebSecurity
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -30,8 +30,7 @@ public class SecurityConfiguration {
         http
                 .csrf(csrf -> csrf.disable())  // Sử dụng phương pháp mới để vô hiệu hóa CSRF
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/**","/api/public/**","/api/auth/authenticate", "/api/auth/users/roles",
-                                "/api/auth/check-auth").permitAll()
+                        .requestMatchers("/auth/**","/api/public/**","/api/auth/authenticate", "/api/auth/users/roles").permitAll()
                         .requestMatchers("/api/auth/**").authenticated()
                         .requestMatchers("/api/auth/users/**").hasAnyRole("MANAGER", "ADMIN")
                         .requestMatchers("/ws/**").permitAll()
@@ -52,7 +51,7 @@ public class SecurityConfiguration {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000")
+                        .allowedOrigins("http://localhost:3000","http://localhost:3001")
                         .allowCredentials(true)
                         .allowedMethods("*")
                         .allowedHeaders("*");

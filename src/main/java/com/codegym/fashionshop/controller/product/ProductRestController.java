@@ -86,7 +86,7 @@ public class ProductRestController {
      * @return a ResponseEntity containing the created product and HTTP status CREATED (201) if successful
      * @throws HttpExceptions.BadRequestException if there are validation errors
      */
-    @PreAuthorize("hasRole('ROLE_SALESMAN')")
+//    @PreAuthorize("hasRole('ROLE_SALESMAN')")
     @PostMapping("")
     public ResponseEntity<Object> createProduct(@RequestBody @Validated Product product, BindingResult bindingResult) {
            if (bindingResult.hasErrors()) {

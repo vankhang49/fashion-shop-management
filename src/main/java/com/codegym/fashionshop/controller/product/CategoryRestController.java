@@ -19,7 +19,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/auth/category")
-
 public class CategoryRestController {
 
     @Autowired

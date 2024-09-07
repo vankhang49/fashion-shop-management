@@ -155,6 +155,7 @@ public class CustomerService implements ICustomerService {
      */
     @Override
     public Page<Customer> getAllCustomers(String keyword, Pageable pageable) {
+//        search : customerCode, customerName, phoneNumber, Level
         return iCustomerRepository.findAllCustomerAndSearch(keyword, keyword, keyword, keyword, pageable);
     }
 }

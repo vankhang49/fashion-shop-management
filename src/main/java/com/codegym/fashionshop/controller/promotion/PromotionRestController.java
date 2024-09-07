@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth/promotions")
-@CrossOrigin("*")
 public class PromotionRestController {
 
     @Autowired

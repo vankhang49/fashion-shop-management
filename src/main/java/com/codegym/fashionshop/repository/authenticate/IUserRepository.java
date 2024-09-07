@@ -45,7 +45,8 @@ public interface IUserRepository extends JpaRepository<AppUser, Long> {
     /**
      * Searches for AppUser entities by username, user code, or role name.
      * <p>
-     * @param searchContent the search content to match against username, user code, or role name
+     * @param searchContent the search content to match against username or user code
+     * @param roleName the search content to match against role name
      * @param pageable      the pagination information
      * @return a Page of AppUser entities matching the search criteria
      */
@@ -55,8 +56,9 @@ public interface IUserRepository extends JpaRepository<AppUser, Long> {
             "u.credentials_non_expired, u.enabled FROM app_user u JOIN app_role r on u.role_id = r.role_id " +
             "WHERE u.full_name LIKE %:searchContent% " +
             "OR u.user_code LIKE %:searchContent% " +
-            "OR r.role_name LIKE %:searchContent%", nativeQuery = true)
-    Page<AppUser> searchAppUserByFullNameOrUserCodeOrRoleName(@Param("searchContent") String searchContent, Pageable pageable);
+            "AND r.role_name LIKE %:roleName%", nativeQuery = true)
+    Page<AppUser> searchAppUserByFullNameOrUserCodeAndRoleName(@Param("searchContent") String searchContent
+            , @Param("roleName") String roleName, Pageable pageable);
 
     /**
      * Retrieves all AppUser entities.

@@ -19,6 +19,15 @@ public interface IBillService  {
     public Double calculateTotalBillForCustomer(Long customerId);
 
     /**
+     * Find bill entity by date create.
+     *
+     * @param dateCreate the date of creation
+     * @Return the bill correct with creation date
+     * @author KhangDV
+     */
+    Bill findBillByDateCreate(LocalDate dateCreate);
+
+    /**
      * Retrieves the daily sales revenue for a specific date.
      *
      * @param date The date for which to retrieve the daily sales revenue.

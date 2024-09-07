@@ -29,6 +29,16 @@ public interface IBillRepository extends JpaRepository<Bill, Long> {
     boolean existsByBillCode(@Param("billCode") String billCode);
 
     /**
+     * Find bill entity by date create.
+     *
+     * @param dateCreate the date of creation
+     * @Return the bill correct with creation date
+     * @author KhangDV
+     */
+    @Query( value = "SELECT bill_id, bill_code, date_create, promotion_code, user_id, customer_id from bills where date_create = :dateCreate", nativeQuery = true)
+    Bill findByDateCreate(@Param("dateCreate") LocalDate dateCreate);
+
+    /**
      * Creates a new bill.
      *
      * @param billCode   the bill code

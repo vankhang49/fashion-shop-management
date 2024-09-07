@@ -1,16 +1,13 @@
 package com.codegym.fashionshop.controller;
 
-import com.codegym.fashionshop.config.JwtAuthenticationFilter;
 import com.codegym.fashionshop.dto.request.AuthenticationRequest;
 import com.codegym.fashionshop.dto.request.UpdatePasswordRequest;
 import com.codegym.fashionshop.dto.request.UpdateUserRequest;
 import com.codegym.fashionshop.dto.respone.AuthenticationResponse;
 import com.codegym.fashionshop.entities.AppUser;
 import com.codegym.fashionshop.service.authenticate.impl.AuthenticationService;
-import com.codegym.fashionshop.service.authenticate.impl.RoleService;
 import com.codegym.fashionshop.service.authenticate.impl.UserService;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,13 +26,11 @@ import org.springframework.web.bind.annotation.*;
  * Author: KhangDV
  */
 @RestController
-
 @RequestMapping("/api/auth")
 public class AuthenticationController {
     @Autowired
     private AuthenticationService authenticationService;
-    @Autowired
-    private RoleService roleService;
+
     @Autowired
     private UserService userService;
 
@@ -44,38 +39,28 @@ public class AuthenticationController {
             @RequestBody AuthenticationRequest request, HttpServletResponse response
     ){
         AuthenticationResponse authRespone = authenticationService.authentication(request);
-        // Thiết lập cookie HTTP-only
-        Cookie cookie = new Cookie("token", authRespone.getToken());
-        cookie.setHttpOnly(true);
-        // cookie.setSecure(true); // Chỉ gửi cookie qua HTTPS trong môi trường sản xuất
-        cookie.setPath("/");
-        cookie.setMaxAge(24 * 60 * 60); // Thời gian tồn tại của cookie (1 ngày)
-        response.addCookie(cookie);
+        if (authRespone.getStatusCode() == 200) {
+            // Thiết lập cookie HTTP-only
+            Cookie cookie = new Cookie("token", authRespone.getToken());
+            cookie.setHttpOnly(true);
+            // cookie.setSecure(true); // Chỉ gửi cookie qua HTTPS trong môi trường sản xuất
+            cookie.setPath("/");
+            cookie.setMaxAge(24 * 60 * 60); // Thời gian tồn tại của cookie (1 ngày)
+            response.addCookie(cookie);
+        }
         return ResponseEntity.ok(authRespone);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logOut(
-            @RequestBody AuthenticationRequest request, HttpServletResponse response
-    ){
+    public ResponseEntity<?> logOut(HttpServletResponse response){
         // Thiết lập cookie HTTP-only
         Cookie cookie = new Cookie("token", null);
         cookie.setHttpOnly(true);
         // cookie.setSecure(true); // Chỉ gửi cookie qua HTTPS trong môi trường sản xuất
         cookie.setPath("/");
-        cookie.setMaxAge(0); // Thời gian tồn tại của cookie (1 ngày)
+        cookie.setMaxAge(0); // Thời gian tồn tại của cookie (0)
         response.addCookie(cookie);
         return ResponseEntity.status(200).body("Đăng xuất thành công!");
-    }
-
-    @GetMapping("/check-auth")
-    public ResponseEntity<?> checkAuth(HttpServletRequest request) {
-        boolean isAuthenticated = JwtAuthenticationFilter.checkAuthentication(request);
-        if (isAuthenticated) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
     }
 
     @GetMapping("/user-role")

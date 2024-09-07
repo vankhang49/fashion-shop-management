@@ -52,6 +52,7 @@ public class UserRestController {
     @GetMapping()
     public ResponseEntity<?> getAllUsers(@RequestParam(name = "page", defaultValue = "0") int page,
                                          @RequestParam(name = "searchContent", defaultValue = "") String searchContent,
+                                         @RequestParam(name = "roleName", defaultValue = "") String roleName,
                                          @RequestParam(name = "codeSort", defaultValue = "") String codeSort,
                                          @RequestParam(name = "codeDirection", defaultValue = "") String codeDirection,
                                          @RequestParam(name = "nameSort", defaultValue = "") String nameSort,
@@ -75,7 +76,7 @@ public class UserRestController {
 
         // Tạo đối tượng PageRequest với Sort tương ứng
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(orders));
-        AuthenticationResponse response = userService.searchAllByFullNameOrUserCodeOrRoleName(searchContent, pageRequest);
+        AuthenticationResponse response = userService.searchAllByFullNameOrUserCodeAndRoleName(searchContent, roleName, pageRequest);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 

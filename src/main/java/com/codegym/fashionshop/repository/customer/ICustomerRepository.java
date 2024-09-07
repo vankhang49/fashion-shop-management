@@ -136,6 +136,14 @@ public interface ICustomerRepository extends JpaRepository<Customer, Long> {
     void deleteCustomer(@Param("customerId") Long customerId, @Param("enable") Boolean enable);
 
     /**
+     * Retrieves all customers.
+     *
+     * @return a list of all customers
+     */
+    @Query(value = "select * from customers order by customer_name asc ", nativeQuery = true)
+    List<Customer> getAllCustomers();
+
+    /**
      * Searches for customers based on their code, name, phone number, and type name.
      *
      * @param customerCode the customer code to search for

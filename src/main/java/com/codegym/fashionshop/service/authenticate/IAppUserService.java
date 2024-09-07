@@ -38,7 +38,7 @@ public interface IAppUserService extends IGeneralService<AppUser>{
      * @param pageable      the pagination information for retrieving search results
      * @return an {@link AuthenticationResponse} containing the search results
      */
-    AuthenticationResponse searchAllByFullNameOrUserCodeOrRoleName(String searchContent, Pageable pageable);
+    AuthenticationResponse searchAllByFullNameOrUserCodeAndRoleName(String searchContent, String roleName, Pageable pageable);
 
     /**
      * Saves a new user based on the provided {@link AppUserRequest}.
