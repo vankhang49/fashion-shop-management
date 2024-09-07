@@ -51,7 +51,7 @@ public class SecurityConfiguration {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000","http://localhost:3001")
+                        .allowedOrigins("http://localhost:3000","https://fashion-shop-management-fe.vercel.app/")
                         .allowCredentials(true)
                         .allowedMethods("*")
                         .allowedHeaders("*");
