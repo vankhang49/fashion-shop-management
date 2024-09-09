@@ -57,5 +57,5 @@ tasks.named('test') {
 }
 
 bootJar {
-	mainClass = 'com.project.fashionshop.FashionShopApplication'
+	mainClass = 'com.codegym.fashionshop.FashionShopApplication'
 }
