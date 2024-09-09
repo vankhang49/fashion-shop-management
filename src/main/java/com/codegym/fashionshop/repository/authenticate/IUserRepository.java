@@ -20,6 +20,7 @@ import java.util.Optional;
  * <p>
  * Author: KhangDV
  */
+@Repository
 public interface IUserRepository extends JpaRepository<AppUser, Long> {
     /**
      * Checks if an AppUser exists with the given username.
