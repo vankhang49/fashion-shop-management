@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 
-public class UserInforUserDetails implements UserDetails, Serializable {
+public class UserInforUserDetails implements UserDetails {
     private static final long serialVersionUID = 3L;
 
     private AppUser user;
