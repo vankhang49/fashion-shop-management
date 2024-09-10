@@ -153,20 +153,15 @@ public interface ICustomerRepository extends JpaRepository<Customer, Long> {
      * @param pageable the pagination information
      * @return a page of customers matching the search criteria
      */
-    @Query(value = "SELECT c.* FROM customers c " +
+    @Query(value = "SELECT c.customer_id, c.accumulated_points, c.address, c.customer_code, " +
+            "c.customer_name, c.date_of_birth, c.date_register, c.email, c.enable, c.gender, c.phone_number, " +
+            "c.type_id FROM customers c " +
             "LEFT JOIN customer_types ct ON c.type_id = ct.type_id " +
-            "WHERE c.enable = true AND (" +
-            "LOWER(c.customer_code) LIKE LOWER(CONCAT('%', :customerCode, '%')) " +
-            "OR LOWER(c.customer_name) LIKE LOWER(CONCAT('%', :customerName, '%')) " +
-            "OR LOWER(c.phone_number) LIKE LOWER(CONCAT('%', :phoneNumber, '%')) " +
-            "OR LOWER(ct.type_name) LIKE LOWER(CONCAT('%', :customerTypeName, '%')))",
-            countQuery = "SELECT COUNT(*) FROM customers c " +
-                    "LEFT JOIN customer_types ct ON c.type_id = ct.type_id " +
-                    "WHERE c.enable = true AND (" +
-                    "LOWER(c.customer_code) LIKE LOWER(CONCAT('%', :customerCode, '%')) " +
-                    "OR LOWER(c.customer_name) LIKE LOWER(CONCAT('%', :customerName, '%')) " +
-                    "OR LOWER(c.phone_number) LIKE LOWER(CONCAT('%', :phoneNumber, '%')) " +
-                    "OR LOWER(ct.type_name) LIKE LOWER(CONCAT('%', :customerTypeName, '%')))",
+            "WHERE c.enable = true AND " +
+            "c.customer_code LIKE %:customerCode% " +
+            "OR c.customer_name LIKE %:customerName% " +
+            "OR c.phone_number LIKE %:phoneNumber% " +
+            "OR ct.type_name LIKE %:customerTypeName%",
             nativeQuery = true)
     Page<Customer> findAllCustomerAndSearch(
             @Param("customerCode") String customerCode,
