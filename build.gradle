@@ -55,7 +55,3 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
-
-bootJar {
-	mainClass = 'com.codegym.fashionshop.FashionShopApplication'
-}

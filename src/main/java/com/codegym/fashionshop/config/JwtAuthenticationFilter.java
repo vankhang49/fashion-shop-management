@@ -3,6 +3,7 @@ package com.codegym.fashionshop.config;
 import com.codegym.fashionshop.entities.permission.RefreshToken;
 import com.codegym.fashionshop.service.authenticate.impl.JwtService;
 import com.codegym.fashionshop.service.authenticate.impl.RefreshTokenService;
+import com.codegym.fashionshop.service.authenticate.impl.UserInforDetailService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -32,15 +33,19 @@ import java.util.Optional;
  * Author: KhangDV
  */
 @Component
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtService jwtService;
 
-    private final UserDetailsService userDetailsService;
+    private final UserInforDetailService userInforDetailService;
 
     @Autowired
     private RefreshTokenService refreshTokenService;
+
+    @Autowired
+    public JwtAuthenticationFilter(UserInforDetailService userInforDetailService) {
+        this.userInforDetailService = userInforDetailService;
+    }
 
     @Override
     protected void doFilterInternal(
@@ -93,7 +98,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = this.userInforDetailService.loadUserByUsername(username);
 
                 if (jwtService.isTokenValid(jwt)) {
                     setAuthentication(request, userDetails);
