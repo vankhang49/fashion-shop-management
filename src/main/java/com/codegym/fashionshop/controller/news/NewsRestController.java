@@ -2,7 +2,7 @@ package com.codegym.fashionshop.controller.news;
 
 import com.codegym.fashionshop.dto.NewsDTO;
 import com.codegym.fashionshop.dto.respone.ErrorDetail;
-import com.codegym.fashionshop.entities.AppUser;
+import com.codegym.fashionshop.entities.permission.AppUser;
 import com.codegym.fashionshop.entities.News;
 import com.codegym.fashionshop.service.authenticate.IAppUserService;
 import com.codegym.fashionshop.service.news.INewsService;

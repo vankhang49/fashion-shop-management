@@ -1,6 +1,6 @@
 package com.codegym.fashionshop.service.authenticate;
 
-import com.codegym.fashionshop.entities.AppRole;
+import com.codegym.fashionshop.entities.permission.AppRole;
 /**
  * Service interface for managing roles.
  * Extends {@link IGeneralService} for common CRUD operations on {@link AppRole}.

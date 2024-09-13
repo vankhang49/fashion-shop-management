@@ -1,6 +1,6 @@
 package com.codegym.fashionshop.dto.request;
 
-import com.codegym.fashionshop.entities.AppRole;
+import com.codegym.fashionshop.entities.permission.AppRole;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +12,7 @@ import org.springframework.validation.Validator;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Set;
 
 /**
  * Represents a request to create or update an AppUser.
@@ -64,8 +65,7 @@ public class AppUserRequest implements Validator {
     @Length(min = 0, max = 255, message = "Địa chỉ không thể vượt quá tối đa 255 ký tự!")
     private String address;
 
-    @NotNull(message = "Chức vụ Không được để trống!")
-    private AppRole role;
+    private Set<AppRole> roles;
 
     private LocalDate dateCreate;
 

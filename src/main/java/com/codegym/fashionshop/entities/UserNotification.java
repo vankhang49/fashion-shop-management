@@ -1,5 +1,6 @@
 package com.codegym.fashionshop.entities;
 
+import com.codegym.fashionshop.entities.permission.AppUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

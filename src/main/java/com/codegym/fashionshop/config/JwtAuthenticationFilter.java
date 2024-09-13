@@ -1,6 +1,8 @@
 package com.codegym.fashionshop.config;
 
+import com.codegym.fashionshop.entities.permission.RefreshToken;
 import com.codegym.fashionshop.service.authenticate.impl.JwtService;
+import com.codegym.fashionshop.service.authenticate.impl.RefreshTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -8,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +21,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Optional;
 
 /**
  * JWT authentication filter to validate JWT tokens from incoming requests.
@@ -32,8 +37,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtService jwtService;
 
+    private final UserDetailsService userDetailsService;
+
     @Autowired
-    private UserDetailsService userDetailsService;
+    private RefreshTokenService refreshTokenService;
 
     @Override
     protected void doFilterInternal(
@@ -42,8 +49,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
-        String jwt = "";
+        final String id =  request.getHeader("Userid");
+
+        String jwt = null;
+        String rft = null;
         final String username;
+
+        if (authHeader == null || !authHeader.startsWith("Bearer")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -51,39 +66,83 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if ("token".equals(cookie.getName())) {
                     jwt = cookie.getValue();
                 }
+                if ("rft".equals(cookie.getName())) {
+                    rft = cookie.getValue();
+                }
             }
         }
 
-        if(jwt == null){
-            filterChain.doFilter(request, response);
+        if (rft == null) {
+            if (id != null) {
+                Long userId = Long.parseLong(id);
+                refreshTokenService.removeLastRefreshTokenByUserId(userId);
+            }
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
         try {
-            if(authHeader == null || !authHeader.startsWith("Bearer")){
+            Optional<RefreshToken> refreshToken = refreshTokenService.findByToken(rft);
+            if (refreshToken.isEmpty()) {
                 filterChain.doFilter(request, response);
                 return;
             }
-            username = jwtService.extractUsername(jwt);
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null){
+
+            RefreshToken refresh = refreshToken.get();
+            username = refresh.getUser().getUsername();
+
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-                if (jwtService.isTokenValid(jwt, userDetails)){
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
-                    );
-                    authToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                if (jwtService.isTokenValid(jwt)) {
+                    setAuthentication(request, userDetails);
+                } else {
+                    if (refreshTokenService.checkAndDeleteExpiredToken(refreshToken.get())) {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        return;
+                    } else {
+                        // Tạo mới access token
+                        System.out.println("remake");
+                        String newAccessToken = jwtService.generateToken(userDetails);
+                        refresh.setExpiryDate(Instant.now().plusMillis(1800000));
+                        refreshTokenService.updateRefreshToken(refresh);
+
+                        ResponseCookie newAccessTokenCookie = ResponseCookie.from("token", newAccessToken)
+                                .httpOnly(true)
+                                .secure(true)
+                                .sameSite("None")
+                                .path("/")
+                                .maxAge(1 * 60 * 60)
+                                .build(); // Thời gian tồn tại của cookie (0)
+
+                        ResponseCookie newRefreshTokenCookie = ResponseCookie.from("rft", refresh.getToken())
+                                .httpOnly(true)
+                                .secure(true)
+                                .sameSite("None")
+                                .path("/")
+                                .maxAge(2 * 60 * 60)
+                                .build();
+
+                        response.addHeader("Set-Cookie", newAccessTokenCookie.toString());
+                        response.addHeader("Set-Cookie", newRefreshTokenCookie.toString());
+                        setAuthentication(request, userDetails);
+                    }
                 }
             }
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
+    }
+
+    private void setAuthentication(HttpServletRequest request, UserDetails userDetails) {
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authToken);
     }
 }

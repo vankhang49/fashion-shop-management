@@ -1,6 +1,6 @@
 package com.codegym.fashionshop.repository.authenticate;
 
-import com.codegym.fashionshop.entities.AppUser;
+import com.codegym.fashionshop.entities.permission.AppUser;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +37,7 @@ public interface IUserRepository extends JpaRepository<AppUser, Long> {
      * @return the found AppUser entity or null if not found
      */
     @Query(value = "SELECT user_id, user_name, encrypted_password, user_code, date_create, background_image, avatar, " +
-            "full_name, gender, date_of_birth, phone_number, email, address, role_id, account_non_expired, " +
+            "full_name, gender, date_of_birth, phone_number, email, address, account_non_expired, " +
             "account_non_locked, credentials_non_expired, enabled FROM app_user " +
             "WHERE user_name = :username", nativeQuery = true)
     AppUser findByUsername(@Param("username") String username);
@@ -50,13 +50,10 @@ public interface IUserRepository extends JpaRepository<AppUser, Long> {
      * @param pageable      the pagination information
      * @return a Page of AppUser entities matching the search criteria
      */
-    @Query(value = "SELECT u.user_id, u.user_name,u.encrypted_password, u.user_code, u.date_create, " +
-            "u.background_image, u.avatar, u.full_name, u.gender, u.date_of_birth, u.phone_number, " +
-            "u.email, u.address, u.role_id, u.account_non_expired, u.account_non_locked, " +
-            "u.credentials_non_expired, u.enabled FROM app_user u JOIN app_role r on u.role_id = r.role_id " +
-            "WHERE u.full_name LIKE %:searchContent% " +
-            "OR u.user_code LIKE %:searchContent% " +
-            "AND r.role_name LIKE %:roleName%", nativeQuery = true)
+    @Query(value = "SELECT DISTINCT u FROM AppUser u JOIN u.roles r " +
+            "WHERE u.fullName LIKE %:searchContent% " +
+            "OR u.userCode LIKE %:searchContent% " +
+            "AND r.roleName LIKE %:roleName%")
     Page<AppUser> searchAppUserByFullNameOrUserCodeAndRoleName(@Param("searchContent") String searchContent
             , @Param("roleName") String roleName, Pageable pageable);
 
@@ -66,9 +63,9 @@ public interface IUserRepository extends JpaRepository<AppUser, Long> {
      * @return a list of all AppUser entities
      */
     @Query(value = "SELECT user_id, user_name, encrypted_password, user_code, date_create, background_image, " +
-            "avatar, full_name, gender, date_of_birth, phone_number, email, address, role_id, account_non_expired, " +
+            "avatar, full_name, gender, date_of_birth, phone_number, email, address, account_non_expired, " +
             "account_non_locked, credentials_non_expired, enabled FROM app_user", nativeQuery = true)
-    List<AppUser> findAll();
+    List<AppUser> findAllUser();
 
     /**
      * Finds an AppUser entity by user ID.
@@ -77,9 +74,9 @@ public interface IUserRepository extends JpaRepository<AppUser, Long> {
      * @return an Optional containing the found AppUser entity or an empty Optional if not found
      */
     @Query(value = "SELECT user_id, user_name, encrypted_password, user_code, date_create, background_image, " +
-            "avatar, full_name, gender, date_of_birth, phone_number, email, address, role_id, account_non_expired, " +
+            "avatar, full_name, gender, date_of_birth, phone_number, email, address, account_non_expired, " +
             "account_non_locked, credentials_non_expired, enabled FROM app_user WHERE user_id = :userId", nativeQuery = true)
-    Optional<AppUser> findById(@Param("userId") Long userId);
+    Optional<AppUser> findUserById(@Param("userId") Long userId);
 
     /**
      * Deletes an AppUser entity by user ID.
@@ -139,17 +136,17 @@ public interface IUserRepository extends JpaRepository<AppUser, Long> {
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO app_user (user_name, encrypted_password, user_code, date_create," +
-            " background_image, avatar, full_name, gender, date_of_birth, phone_number, email, address, role_id," +
+            " background_image, avatar, full_name, gender, date_of_birth, phone_number, email, address," +
             " account_non_expired, account_non_locked, credentials_non_expired, enabled) " +
             "VALUES (:username, :encryptedPassword, :userCode, :dateCreate, :backgroundImage, :avatar, :fullName," +
-            ":gender, :dateOfBirth, :phoneNumber, :email, :address, :roleId," +
+            ":gender, :dateOfBirth, :phoneNumber, :email, :address," +
             ":accountNonExpired, :accountNonLocked, :credentialsNonExpired, :enabled)", nativeQuery = true)
     void saveUser(@Param("username") String username, @Param("encryptedPassword") String encryptedPassword,
                   @Param("userCode") String userCode, @Param("dateCreate") LocalDate dateCreate,
                   @Param("backgroundImage") String backgroundImage, @Param("avatar") String avatar,
                   @Param("fullName") String fullName, @Param("gender") Integer gender,
                   @Param("dateOfBirth")LocalDate dateOfBirth, @Param("phoneNumber") String phoneNumber,
-                  @Param("email") String email, @Param("address") String address, @Param("roleId") Long roleId,
+                  @Param("email") String email, @Param("address") String address,
                   @Param("accountNonExpired") Boolean accountNonExpired, @Param("accountNonLocked")Boolean accountNonLocked,
                   @Param("credentialsNonExpired")Boolean credentialsNonExpired, @Param("enabled") Boolean enabled);
 
@@ -180,7 +177,7 @@ public interface IUserRepository extends JpaRepository<AppUser, Long> {
     @Query(value = "UPDATE app_user set user_name = :username, encrypted_password = :encryptedPassword," +
             "user_code = :userCode, date_create = :dateCreate, background_image = :backgroundImage, avatar = :avatar, " +
             "full_name = :fullName, gender = :gender, date_of_birth = :dateOfBirth, phone_number = :phoneNumber, " +
-            "email = :email, address = :address, role_id = :roleId, account_non_expired = :accountNonExpired," +
+            "email = :email, address = :address, account_non_expired = :accountNonExpired," +
             "account_non_locked = :accountNonLocked, credentials_non_expired = :credentialsNonExpired," +
             "enabled = :enabled WHERE user_id = :userId", nativeQuery = true)
     void updateUser(@Param("username") String username, @Param("encryptedPassword") String encryptedPassword,
@@ -188,7 +185,7 @@ public interface IUserRepository extends JpaRepository<AppUser, Long> {
                     @Param("backgroundImage") String backgroundImage, @Param("avatar") String avatar,
                     @Param("fullName") String fullName, @Param("gender") Integer gender,
                     @Param("dateOfBirth")LocalDate dateOfBirth, @Param("phoneNumber") String phoneNumber,
-                    @Param("email") String email, @Param("address") String address, @Param("roleId") Long roleId,
+                    @Param("email") String email, @Param("address") String address,
                     @Param("accountNonExpired") Boolean accountNonExpired, @Param("accountNonLocked")Boolean accountNonLocked,
                     @Param("credentialsNonExpired")Boolean credentialsNonExpired, @Param("enabled") Boolean enabled,
                     @Param("userId") Long userId);

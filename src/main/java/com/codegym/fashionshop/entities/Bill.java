@@ -1,5 +1,6 @@
 package com.codegym.fashionshop.entities;
 
+import com.codegym.fashionshop.entities.permission.AppUser;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

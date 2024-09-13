@@ -93,7 +93,7 @@ public class JwtService {
                     .setClaims(extraClaims)
                     .setSubject(userDetails.getUsername())
                     .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                    .setExpiration(new Date(System.currentTimeMillis() + 900000))
                     .signWith(getSignKey(), SignatureAlgorithm.HS256)
                     .compact();
         } catch (Exception e) {
@@ -106,12 +106,10 @@ public class JwtService {
      * Validates the JWT token against user details.
      *
      * @param token       The JWT token.
-     * @param userDetails The user details.
      * @return True if the token is valid, false otherwise.
      */
-    public boolean isTokenValid(String token, UserDetails userDetails){
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    public boolean isTokenValid(String token){
+        return !isTokenExpired(token);
     }
 
     /**
@@ -124,7 +122,7 @@ public class JwtService {
         try {
             return extractExpiration(token).before(new Date());
         } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
+            return true;
         }
     }
 

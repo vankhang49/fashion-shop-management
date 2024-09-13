@@ -40,11 +40,10 @@ public class NotificationController {
      *
      * @return ResponseEntity containing a list of notifications or an error message.
      */
-    @GetMapping("/list")
-    public ResponseEntity<Object> findAllNotification() {
+    @GetMapping("/list/{userId}")
+    public ResponseEntity<Object> findAllNotification(@PathVariable Long userId) {
         try {
-            AuthenticationResponse response = notificationService.responseAuthentication();
-            List<INotificationDTO> notifications = notificationService.getAllNotification(response.getRole().getRoleId(), response.getUserId());
+            List<INotificationDTO> notifications = notificationService.getAllNotification(userId);
             return ResponseEntity.ok(notifications);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(FETCH_ERROR_MESSAGE);
@@ -57,11 +56,12 @@ public class NotificationController {
      * @param statusRead boolean indicating the read status of notifications to retrieve.
      * @return ResponseEntity containing a list of notifications or an error message.
      */
-    @GetMapping("/listByStatusRead/{statusRead}")
-    public ResponseEntity<Object> findAllNotificationByStatusRead(@PathVariable("statusRead") boolean statusRead) {
+    @GetMapping("/listByStatusRead/{statusRead}/{userId}")
+    public ResponseEntity<Object> findAllNotificationByStatusRead(@PathVariable("statusRead") boolean statusRead,
+                                                                  @PathVariable("userId") Long userId
+    ) {
         try {
-            AuthenticationResponse response = notificationService.responseAuthentication();
-            List<INotificationDTO> notifications = notificationService.findNotificationsByStatusRead(response.getUserId(), statusRead);
+            List<INotificationDTO> notifications = notificationService.findNotificationsByStatusRead(userId, statusRead);
             return ResponseEntity.ok(notifications);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(FETCH_ERROR_MESSAGE);

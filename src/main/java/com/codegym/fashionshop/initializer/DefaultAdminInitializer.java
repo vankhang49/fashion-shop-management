@@ -1,13 +1,16 @@
 package com.codegym.fashionshop.initializer;
 
-import com.codegym.fashionshop.entities.AppRole;
-import com.codegym.fashionshop.entities.AppUser;
+import com.codegym.fashionshop.entities.permission.AppRole;
+import com.codegym.fashionshop.entities.permission.AppUser;
 import com.codegym.fashionshop.service.authenticate.IAppUserService;
 import com.codegym.fashionshop.service.authenticate.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Component
@@ -50,11 +53,13 @@ public class DefaultAdminInitializer implements CommandLineRunner {
                 adminRole.setRoleName("ROLE_ADMIN");
                 roleService.save(adminRole);
             }
+            Set<AppRole> roles = new HashSet<>();
+            roles.add(adminRole);
             // Tạo tài khoản admin mặc định
             AppUser admin = new AppUser();
             admin.setUsername("admin");
             admin.setEncryptedPassword(passwordEncoder.encode("1234"));
-            admin.setRole(adminRole);
+            admin.setRoles(roles);
             admin.setEnabled(true);
             admin.setAccountNonExpired(true);
             admin.setAccountNonLocked(true);

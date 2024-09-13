@@ -1,6 +1,6 @@
 package com.codegym.fashionshop.dto.request;
 
-import com.codegym.fashionshop.entities.AppRole;
+import com.codegym.fashionshop.entities.permission.AppRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

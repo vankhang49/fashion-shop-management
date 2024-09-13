@@ -1,5 +1,6 @@
 package com.codegym.fashionshop.entities;
 
+import com.codegym.fashionshop.entities.permission.AppUser;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

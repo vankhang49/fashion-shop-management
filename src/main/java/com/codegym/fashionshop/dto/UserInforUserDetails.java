@@ -1,26 +1,32 @@
 package com.codegym.fashionshop.dto;
 
-import com.codegym.fashionshop.entities.AppUser;
+import com.codegym.fashionshop.entities.permission.AppRole;
+import com.codegym.fashionshop.entities.permission.AppUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 public class UserInforUserDetails implements UserDetails {
-    private static final long serialVersionUID = 3L;
-
     private AppUser user;
 
-    public UserInforUserDetails(AppUser user) {
+    private List<GrantedAuthority> authorities = new ArrayList<>();
+
+    public UserInforUserDetails(AppUser user, Set<AppRole> roles) {
         this.user = user;
+        if (roles != null) {
+            for (AppRole role : roles) {
+                //ROLE_ADMIN, ROLE_MANAGER, ROLE_EMPLOYEE, ROLE_CUSTOMER
+                GrantedAuthority authority = new SimpleGrantedAuthority(role.getRoleName());
+                authorities.add(authority);
+            }
+        }
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(user.getRole().getRoleName()));
+        return authorities;
     }
 
     @Override

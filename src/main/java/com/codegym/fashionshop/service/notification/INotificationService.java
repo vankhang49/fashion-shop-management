@@ -22,11 +22,10 @@ public interface INotificationService {
     /**
      * Retrieves all notifications based on the provided role and user IDs.
      *
-     * @param roleId The ID of the role to filter notifications.
      * @param userId The ID of the user to filter notifications.
      * @return A list of {@link INotificationDTO} objects representing the notifications.
      */
-    List<INotificationDTO> getAllNotification(Long roleId, Long userId);
+    List<INotificationDTO> getAllNotification(Long userId);
 
     /**
      * Adds a new notification with the specified details.

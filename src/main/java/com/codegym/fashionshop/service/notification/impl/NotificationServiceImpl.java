@@ -29,8 +29,8 @@ public class NotificationServiceImpl implements INotificationService {
     private final AuthenticationService authenticationService;
 
     @Override
-    public List<INotificationDTO> getAllNotification(Long roleId, Long userId) {
-        return notificationRepository.findAll(roleId, userId);
+    public List<INotificationDTO> getAllNotification(Long userId) {
+        return notificationRepository.findAll(userId);
     }
 
     @Override

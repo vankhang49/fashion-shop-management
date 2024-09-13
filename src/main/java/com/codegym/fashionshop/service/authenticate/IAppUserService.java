@@ -3,7 +3,7 @@ package com.codegym.fashionshop.service.authenticate;
 
 import com.codegym.fashionshop.dto.request.AppUserRequest;
 import com.codegym.fashionshop.dto.respone.AuthenticationResponse;
-import com.codegym.fashionshop.entities.AppUser;
+import com.codegym.fashionshop.entities.permission.AppUser;
 import org.springframework.data.domain.Pageable;
 
 /**

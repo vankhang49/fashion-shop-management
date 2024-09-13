@@ -1,4 +1,4 @@
-package com.codegym.fashionshop.entities;
+package com.codegym.fashionshop.entities.permission;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

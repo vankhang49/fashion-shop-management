@@ -1,6 +1,6 @@
 package com.codegym.fashionshop.repository.authenticate;
 
-import com.codegym.fashionshop.entities.AppRole;
+import com.codegym.fashionshop.entities.permission.AppRole;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -33,7 +33,7 @@ public interface IRoleRepository extends JpaRepository<AppRole, Long> {
      * @return a list of all AppRole entities
      */
     @Query(value = "SELECT role_id, role_name FROM app_role", nativeQuery = true)
-    List<AppRole> findAll();
+    List<AppRole> findAllRole();
 
 
     /**
@@ -43,7 +43,7 @@ public interface IRoleRepository extends JpaRepository<AppRole, Long> {
      * @return an Optional containing the found AppRole entity or an empty Optional if not found
      */
     @Query(value = "SELECT role_id, role_name FROM app_role WHERE role_id = :roleId", nativeQuery = true)
-    Optional<AppRole> findById(@Param("roleId") Long roleId);
+    Optional<AppRole> findRoleById(@Param("roleId") Long roleId);
 
     /**
      * Saves a new AppRole entity into the database.
@@ -53,7 +53,7 @@ public interface IRoleRepository extends JpaRepository<AppRole, Long> {
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO app_role (role_name) VALUES (:roleName)", nativeQuery = true)
-    void save(@Param("roleName") String roleName);
+    void saveRole(@Param("roleName") String roleName);
 
     /**
      * Updates an existing AppRole entity in the database.
@@ -63,7 +63,7 @@ public interface IRoleRepository extends JpaRepository<AppRole, Long> {
     @Modifying
     @Transactional
     @Query(value = "UPDATE app_role SET role_name = :roleName WHERE role_id = :roleId", nativeQuery = true)
-    void update(@Param("roleName") String roleName, @Param("roleId") Long roleId);
+    void updateRole(@Param("roleName") String roleName, @Param("roleId") Long roleId);
 
     /**
      * Deletes an AppRole entity by role ID.
@@ -73,5 +73,5 @@ public interface IRoleRepository extends JpaRepository<AppRole, Long> {
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM app_role WHERE role_id = :roleId", nativeQuery = true)
-    void delete(@Param("roleId") Long roleId);
+    void deleteRole(@Param("roleId") Long roleId);
 }

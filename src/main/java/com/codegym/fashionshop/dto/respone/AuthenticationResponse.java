@@ -1,7 +1,7 @@
 package com.codegym.fashionshop.dto.respone;
 
-import com.codegym.fashionshop.entities.AppRole;
-import com.codegym.fashionshop.entities.AppUser;
+import com.codegym.fashionshop.entities.permission.AppRole;
+import com.codegym.fashionshop.entities.permission.AppUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Response DTO for authentication-related operations.
@@ -30,6 +31,8 @@ public class AuthenticationResponse {
     private String message;
 
     private String token;
+
+    private String refreshToken;
 
     private Long userId;
 
@@ -55,7 +58,7 @@ public class AuthenticationResponse {
 
     private String address;
 
-    private AppRole role;
+    private Set<AppRole> roles;
 
     private Boolean accountNonExpired;
 
@@ -66,6 +69,4 @@ public class AuthenticationResponse {
     private Boolean enabled;
 
     private Page<AppUser> users;
-
-    private List<AppRole> roles;
 }

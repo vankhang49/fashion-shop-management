@@ -1,7 +1,7 @@
 package com.codegym.fashionshop.service.product.impl;
 
 import com.codegym.fashionshop.dto.WarehouseReceiptDTO;
-import com.codegym.fashionshop.entities.AppUser;
+import com.codegym.fashionshop.entities.permission.AppUser;
 import com.codegym.fashionshop.entities.Pricing;
 import com.codegym.fashionshop.entities.Product;
 import com.codegym.fashionshop.repository.product.IInventoryRepository;
@@ -9,7 +9,6 @@ import com.codegym.fashionshop.repository.product.IPricingRepository;
 import com.codegym.fashionshop.repository.product.IProductRepository;
 import com.codegym.fashionshop.service.authenticate.IAppUserService;
 import com.codegym.fashionshop.service.product.IPricingService;
-import com.codegym.fashionshop.service.product.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PricingService implements IPricingService {

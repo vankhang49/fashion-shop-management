@@ -1,4 +1,4 @@
-package com.codegym.fashionshop.entities;
+package com.codegym.fashionshop.entities.permission;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Set;
 
 /**
  * Entity class representing a user in the application.
@@ -77,9 +78,10 @@ public class AppUser implements Serializable {
     @Column(name = "address")
     private String address;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private AppRole role;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role", joinColumns = { @JoinColumn (name = "user_id") },
+            inverseJoinColumns = { @JoinColumn (name = "role_id")})
+    private Set<AppRole> roles;
 
     /**
      * Indicates if the user account is non-expired.

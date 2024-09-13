@@ -4,13 +4,17 @@ import com.codegym.fashionshop.dto.request.AuthenticationRequest;
 import com.codegym.fashionshop.dto.request.UpdatePasswordRequest;
 import com.codegym.fashionshop.dto.request.UpdateUserRequest;
 import com.codegym.fashionshop.dto.respone.AuthenticationResponse;
-import com.codegym.fashionshop.entities.AppUser;
+import com.codegym.fashionshop.entities.permission.AppRole;
+import com.codegym.fashionshop.entities.permission.AppUser;
 import com.codegym.fashionshop.service.authenticate.impl.AuthenticationService;
+import com.codegym.fashionshop.service.authenticate.impl.RefreshTokenService;
 import com.codegym.fashionshop.service.authenticate.impl.UserService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -18,6 +22,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 /**
  * Controller for managing user authentication and profile.
@@ -34,45 +40,88 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(
             @RequestBody AuthenticationRequest request, HttpServletResponse response
     ){
-        AuthenticationResponse authRespone = authenticationService.authentication(request);
-        if (authRespone.getStatusCode() == 200) {
+        AuthenticationResponse authResponse = authenticationService.authentication(request);
+
+        if (authResponse.getStatusCode() == 200) {
             // Thiết lập cookie HTTP-only
-            Cookie cookie = new Cookie("token", authRespone.getToken());
-            cookie.setHttpOnly(true);
-            // cookie.setSecure(true); // Chỉ gửi cookie qua HTTPS trong môi trường sản xuất
-            cookie.setPath("/");
-            cookie.setMaxAge(24 * 60 * 60); // Thời gian tồn tại của cookie (1 ngày)
-            response.addCookie(cookie);
+            ResponseCookie cookie = ResponseCookie.from("token", authResponse.getToken())
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("None")
+                    .path("/")
+                    .maxAge(1 * 60 * 60)
+                    .build(); // Thời gian tồn tại của cookie (0)
+
+            ResponseCookie newRefreshTokenCookie = ResponseCookie.from("rft", authResponse.getRefreshToken())
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("None")
+                    .path("/")
+                    .maxAge(2 * 60 * 60)
+                    .build();
+
+            response.addHeader("Set-Cookie", cookie.toString());
+            response.addHeader("Set-Cookie", newRefreshTokenCookie.toString());
         }
-        return ResponseEntity.ok(authRespone);
+        return ResponseEntity.status(authResponse.getStatusCode()).body(authResponse);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logOut(HttpServletResponse response){
+    public ResponseEntity<?> logOut(HttpServletRequest request, HttpServletResponse response,
+                                    @RequestParam(name = "userId") Long userId){
+        System.out.println(userId);
+        String rft = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("rft".equals(cookie.getName())) {
+                    rft = cookie.getValue();
+                }
+            }
+        }
+
         // Thiết lập cookie HTTP-only
-        Cookie cookie = new Cookie("token", null);
-        cookie.setHttpOnly(true);
-        // cookie.setSecure(true); // Chỉ gửi cookie qua HTTPS trong môi trường sản xuất
-        cookie.setPath("/");
-        cookie.setMaxAge(0); // Thời gian tồn tại của cookie (0)
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .maxAge(0)
+                .build(); // Thời gian tồn tại của cookie (0)
+
+        ResponseCookie newRefreshTokenCookie = ResponseCookie.from("rft", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+        response.addHeader("Set-Cookie", newRefreshTokenCookie.toString());
+
+        refreshTokenService.removeRefreshTokenByToken(rft);
+
         return ResponseEntity.status(200).body("Đăng xuất thành công!");
     }
 
     @GetMapping("/user-role")
-    public ResponseEntity<String> getUserRole() {
+    public ResponseEntity<?> getUserRole() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         AppUser user = userService.findByUsername(username);
         if (user == null) {
             return ResponseEntity.noContent().build();
         }
-        String roleName = user.getRole().getRoleName();
-        return ResponseEntity.status(200).body(roleName);
+        Set<AppRole> roles = user.getRoles();
+        return ResponseEntity.status(200).body(roles);
     }
 
     /**

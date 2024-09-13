@@ -5,8 +5,7 @@ import com.codegym.fashionshop.dto.request.AuthenticationRequest;
 import com.codegym.fashionshop.dto.request.UpdatePasswordRequest;
 import com.codegym.fashionshop.dto.request.UpdateUserRequest;
 import com.codegym.fashionshop.dto.respone.AuthenticationResponse;
-import com.codegym.fashionshop.entities.AppUser;
-import com.codegym.fashionshop.repository.authenticate.IRoleRepository;
+import com.codegym.fashionshop.entities.permission.AppUser;
 import com.codegym.fashionshop.repository.authenticate.IUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 
 /**
  * Service implementation for managing user authentication and registration.
@@ -30,7 +27,7 @@ public class AuthenticationService {
     private IUserRepository userRepository;
 
     @Autowired
-    private IRoleRepository roleRepository;
+    private RefreshTokenService refreshTokenService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -54,13 +51,16 @@ public class AuthenticationService {
                     )
             );
             var user = userRepository.findByUsername(request.getUsername());
-            UserInforUserDetails userDetails = new UserInforUserDetails(user);
+            UserInforUserDetails userDetails = new UserInforUserDetails(user, user.getRoles());
             var jwtToken = jwtService.generateToken(userDetails);
+            var refreshToken = refreshTokenService.createRefreshToken(request.getUsername());
             return AuthenticationResponse.builder()
                     .statusCode(200)
                     .token(jwtToken)
-                    .fullName(user.getFullName())
+                    .refreshToken(refreshToken.getToken())
                     .avatar(user.getAvatar())
+                    .userId(user.getUserId())
+                    .fullName(user.getFullName())
                     .message("Đăng nhập thành công!!!")
                     .build();
         } catch (Exception e) {
@@ -89,7 +89,7 @@ public class AuthenticationService {
                     .dateOfBirth(user.getDateOfBirth())
                     .email(user.getEmail())
                     .phoneNumber(user.getPhoneNumber())
-                    .role(user.getRole())
+                    .roles(user.getRoles())
                     .fullName(user.getFullName())
                     .gender(user.getGender())
                     .backgroundImage(user.getBackgroundImage())
@@ -138,26 +138,8 @@ public class AuthenticationService {
         }
         try {
             user.setEncryptedPassword(passwordEncoder.encode(updatePasswordRequest.getNewPassword()));
-            Long userId = user.getUserId();
-            String encryptedPassword = passwordEncoder.encode(updatePasswordRequest.getNewPassword());
-            String userCode = user.getUserCode();
-            LocalDate dateCreate = LocalDate.now();
-            String backgroundImage = user.getBackgroundImage();
-            String avatar = user.getAvatar();
-            String fullName = user.getFullName();
-            Integer gender = user.getGender();
-            LocalDate dateOfBirth = user.getDateOfBirth();
-            String phoneNumber = user.getPhoneNumber();
-            String email = user.getEmail();
-            String address = user.getAddress();
-            Long roleId = user.getRole().getRoleId();
-            Boolean accountNonExpired = user.getAccountNonExpired();
-            Boolean credentialsNonExpired = user.getCredentialsNonExpired();
-            Boolean accountNonLocked = user.getAccountNonLocked();
-            Boolean enabled = user.getEnabled();
-            userRepository.updateUser(username, encryptedPassword, userCode, dateCreate, backgroundImage, avatar, fullName, gender,
-                    dateOfBirth, phoneNumber, email, address, roleId, accountNonExpired, credentialsNonExpired, accountNonLocked,
-                    enabled, userId);
+
+            userRepository.save(user);
 
         } catch (Exception e) {
             return AuthenticationResponse.builder()
@@ -166,7 +148,7 @@ public class AuthenticationService {
                     .error(e.getMessage())
                     .build();
         }
-        UserInforUserDetails userDetails = new UserInforUserDetails(user);
+        UserInforUserDetails userDetails = new UserInforUserDetails(user, user.getRoles());
         var jwtToken = jwtService.generateToken(userDetails);
         return AuthenticationResponse.builder()
                 .statusCode(200)
@@ -178,7 +160,7 @@ public class AuthenticationService {
                 .dateOfBirth(user.getDateOfBirth())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
-                .role(user.getRole())
+                .roles(user.getRoles())
                 .fullName(user.getFullName())
                 .gender(user.getGender())
                 .backgroundImage(user.getBackgroundImage())
@@ -238,7 +220,7 @@ public class AuthenticationService {
                 .dateOfBirth(user.getDateOfBirth())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
-                .role(user.getRole())
+                .roles(user.getRoles())
                 .fullName(user.getFullName())
                 .gender(user.getGender())
                 .backgroundImage(user.getBackgroundImage())

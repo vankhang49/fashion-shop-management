@@ -32,7 +32,6 @@ public interface INotificationRepository extends JpaRepository<Notification, Lon
     /**
      * Retrieves a list of notifications for a given role and user.
      *
-     * @param roleId the ID of the role to filter notifications.
      * @param userId the ID of the user to filter notifications.
      * @return a list of {@link INotificationDTO} objects representing the notifications.
      */
@@ -41,10 +40,10 @@ public interface INotificationRepository extends JpaRepository<Notification, Lon
             FROM notification n
             JOIN user_notification u ON n.notif_id = u.notif_id
             JOIN app_user a ON a.user_id = u.user_id
-            WHERE a.role_id = :roleId AND u.user_id = :userId 
+            WHERE u.user_id = :userId 
             ORDER BY n.create_date DESC
             """, nativeQuery = true)
-    List<INotificationDTO> findAll(@Param("roleId") Long roleId, @Param("userId") Long userId);
+    List<INotificationDTO> findAll(@Param("userId") Long userId);
 
     /**
      * Inserts a new notification into the database.
@@ -71,12 +70,13 @@ public interface INotificationRepository extends JpaRepository<Notification, Lon
     @Modifying
     @Transactional
     @Query(value = """
-            INSERT INTO user_notification (status_read, user_id, notif_id)
-            SELECT 0, a.user_id, :notifId
-            FROM app_user a
-            JOIN app_role r ON a.role_id = r.role_id
-            WHERE r.role_id IN :listRole
-            """, nativeQuery = true)
+        INSERT INTO user_notification (status_read, user_id, notif_id)
+        SELECT 0, ur.user_id, :notifId
+        FROM user_role ur
+        JOIN app_user a ON ur.user_id = a.user_id
+        JOIN app_role r ON ur.role_id = r.role_id
+        WHERE r.role_id IN :listRole
+        """, nativeQuery = true)
     void addNewNotification(@Param("notifId") Long notifId, @Param("listRole") List<Long> listRole);
 
     /**

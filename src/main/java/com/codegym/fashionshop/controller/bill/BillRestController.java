@@ -5,7 +5,7 @@ import com.codegym.fashionshop.dto.respone.ErrorDetail;
 import com.codegym.fashionshop.entities.*;
 import com.codegym.fashionshop.dto.DailyRevenueDTO;
 import com.codegym.fashionshop.dto.SoldPricingsDTO;
-import com.codegym.fashionshop.entities.AppUser;
+import com.codegym.fashionshop.entities.permission.AppUser;
 import com.codegym.fashionshop.entities.Bill;
 
 import com.codegym.fashionshop.exceptions.HttpExceptions;

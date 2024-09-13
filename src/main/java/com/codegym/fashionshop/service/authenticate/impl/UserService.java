@@ -2,8 +2,8 @@ package com.codegym.fashionshop.service.authenticate.impl;
 
 import com.codegym.fashionshop.dto.request.AppUserRequest;
 import com.codegym.fashionshop.dto.respone.AuthenticationResponse;
-import com.codegym.fashionshop.entities.AppRole;
-import com.codegym.fashionshop.entities.AppUser;
+import com.codegym.fashionshop.entities.permission.AppRole;
+import com.codegym.fashionshop.entities.permission.AppUser;
 import com.codegym.fashionshop.repository.authenticate.IRoleRepository;
 import com.codegym.fashionshop.repository.authenticate.IUserRepository;
 import com.codegym.fashionshop.service.authenticate.IAppUserService;
@@ -15,8 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Service implementation for managing {@link AppUser} entities.
@@ -29,8 +31,6 @@ import java.util.Optional;
 public class UserService implements IAppUserService {
     @Autowired
     private IUserRepository userRepository;
-    @Autowired
-    private IRoleRepository roleRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -76,7 +76,7 @@ public class UserService implements IAppUserService {
      */
     @Override
     public List<AppUser> findAll() {
-        return userRepository.findAll();
+        return userRepository.findAllUser();
     }
 
     /**
@@ -102,26 +102,26 @@ public class UserService implements IAppUserService {
         if (appUserRequest.getPassword() == null || appUserRequest.getPassword().isEmpty()) {
             appUserRequest.setPassword("123");
         }
-        String encryptedPassword = passwordEncoder.encode(appUserRequest.getPassword());
-        String userCode = appUserRequest.getUserCode();
-        LocalDate dateCreate = LocalDate.now();
-        String backgroundImage = appUserRequest.getBackgroundImage();
-        String avatar = appUserRequest.getAvatar();
-        String fullName = appUserRequest.getFullName();
-        Integer gender = appUserRequest.getGender();
-        LocalDate dateOfBirth = appUserRequest.getDateOfBirth();
-        String phoneNumber = appUserRequest.getPhoneNumber();
-        String email = appUserRequest.getEmail();
-        String address = appUserRequest.getAddress();
-        Long roleId = appUserRequest.getRole().getRoleId();
-        Boolean accountNonExpired = true;
-        Boolean credentialsNonExpired = true;
-        Boolean accountNonLocked = true;
-        Boolean enabled = true;
+        AppUser user = new AppUser();
+        user.setUsername(username);
+        user.setEncryptedPassword(passwordEncoder.encode(appUserRequest.getPassword()));
+        user.setUserCode(appUserRequest.getUserCode());
+        user.setDateCreate(LocalDate.now());
+        user.setBackgroundImage(appUserRequest.getBackgroundImage());
+        user.setAvatar(appUserRequest.getAvatar());
+        user.setFullName(appUserRequest.getFullName());
+        user.setGender(appUserRequest.getGender());
+        user.setDateOfBirth(appUserRequest.getDateOfBirth());
+        user.setPhoneNumber(appUserRequest.getPhoneNumber());
+        user.setEmail(appUserRequest.getEmail());
+        user.setAddress(appUserRequest.getAddress());
+        user.setAccountNonExpired(true);
+        user.setAccountNonLocked(true);
+        user.setCredentialsNonExpired(true);
+        user.setEnabled(true);
+        user.setRoles(appUserRequest.getRoles());
         try {
-        userRepository.saveUser(username, encryptedPassword, userCode, dateCreate, backgroundImage, avatar, fullName,
-                gender, dateOfBirth, phoneNumber, email, address, roleId, accountNonExpired, credentialsNonExpired,
-                accountNonLocked, enabled);
+        userRepository.save(user);
         }catch (Exception e) {
             return AuthenticationResponse.builder()
                     .statusCode(400)
@@ -143,37 +143,35 @@ public class UserService implements IAppUserService {
      * @return An {@link AuthenticationResponse} indicating the status of the update operation.
      */
     public AuthenticationResponse updateUser(Long userId, AppUserRequest appUserRequest) {
-        Optional<AppUser> user = userRepository.findById(userId);
-        if (user.isEmpty()) {
+        Optional<AppUser> appUser = userRepository.findUserById(userId);
+        if (appUser.isEmpty()) {
             return AuthenticationResponse.builder()
                     .statusCode(400)
                     .message("Không tìm thấy kết quả!")
                     .build();
         }
-        String username = appUserRequest.getUsername();
-        String encryptedPassword = user.get().getEncryptedPassword();
+        AppUser user = appUser.get();
+        user.setUsername(appUserRequest.getUsername());
         if (appUserRequest.getPassword() != null || !appUserRequest.getPassword().isEmpty()) {
-            encryptedPassword = passwordEncoder.encode(appUserRequest.getPassword());
+            user.setEncryptedPassword(passwordEncoder.encode(appUserRequest.getPassword()));
         }
-        String userCode = appUserRequest.getUserCode();
-        LocalDate dateCreate = LocalDate.now();
-        String backgroundImage = appUserRequest.getBackgroundImage();
-        String avatar = appUserRequest.getAvatar();
-        String fullName = appUserRequest.getFullName();
-        Integer gender = appUserRequest.getGender();
-        LocalDate dateOfBirth = appUserRequest.getDateOfBirth();
-        String phoneNumber = appUserRequest.getPhoneNumber();
-        String email = appUserRequest.getEmail();
-        String address = appUserRequest.getAddress();
-        Long roleId = appUserRequest.getRole().getRoleId();
-        Boolean accountNonExpired = appUserRequest.getAccountNonExpired();
-        Boolean credentialsNonExpired = appUserRequest.getCredentialsNonExpired();
-        Boolean accountNonLocked = appUserRequest.getAccountNonLocked();
-        Boolean enabled = appUserRequest.getEnabled();
+        user.setUserCode(appUserRequest.getUserCode());
+        user.setDateCreate(LocalDate.now());
+        user.setBackgroundImage(appUserRequest.getBackgroundImage());
+        user.setAvatar(appUserRequest.getAvatar());
+        user.setFullName(appUserRequest.getFullName());
+        user.setGender(appUserRequest.getGender());
+        user.setDateOfBirth(appUserRequest.getDateOfBirth());
+        user.setPhoneNumber(appUserRequest.getPhoneNumber());
+        user.setEmail(appUserRequest.getEmail());
+        user.setAddress(appUserRequest.getAddress());
+        user.setAccountNonExpired(appUserRequest.getAccountNonExpired());
+        user.setAccountNonLocked(appUserRequest.getAccountNonLocked());
+        user.setCredentialsNonExpired(appUserRequest.getCredentialsNonExpired());
+        user.setEnabled(appUserRequest.getEnabled());
+        user.setRoles(appUserRequest.getRoles());
         try {
-        userRepository.updateUser(username, encryptedPassword, userCode, dateCreate, backgroundImage, avatar, fullName,
-                gender, dateOfBirth, phoneNumber, email, address, roleId, accountNonExpired, credentialsNonExpired,
-                accountNonLocked, enabled, userId);
+        userRepository.save(user);
         }catch (Exception e) {
             return AuthenticationResponse.builder()
                     .statusCode(400)
@@ -214,7 +212,7 @@ public class UserService implements IAppUserService {
      */
     @Override
     public AppUser findById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findUserById(id).orElse(null);
     }
 
     /**
@@ -224,8 +222,7 @@ public class UserService implements IAppUserService {
      * @return An {@link AuthenticationResponse} containing the found user details and related roles.
      */
     public AuthenticationResponse findUserUpdate(Long id){
-        Optional<AppUser> appUser = userRepository.findById(id);
-        List<AppRole> roles = roleRepository.findAll();
+        Optional<AppUser> appUser = userRepository.findUserById(id);
         if (appUser.isEmpty()) {
             return AuthenticationResponse.builder()
                     .statusCode(400)
@@ -248,12 +245,11 @@ public class UserService implements IAppUserService {
                 .email(updatedAppUser.getEmail())
                 .phoneNumber(updatedAppUser.getPhoneNumber())
                 .address(updatedAppUser.getAddress())
-                .role(updatedAppUser.getRole())
+                .roles(updatedAppUser.getRoles())
                 .accountNonExpired(updatedAppUser.getAccountNonExpired())
                 .credentialsNonExpired(updatedAppUser.getCredentialsNonExpired())
                 .accountNonLocked(updatedAppUser.getAccountNonLocked())
                 .enabled(updatedAppUser.getEnabled())
-                .roles(roles)
                 .build();
     }
 

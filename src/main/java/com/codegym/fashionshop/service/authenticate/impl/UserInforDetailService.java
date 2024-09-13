@@ -2,7 +2,7 @@ package com.codegym.fashionshop.service.authenticate.impl;
 
 
 import com.codegym.fashionshop.dto.UserInforUserDetails;
-import com.codegym.fashionshop.entities.AppUser;
+import com.codegym.fashionshop.entities.permission.AppUser;
 import com.codegym.fashionshop.repository.authenticate.IUserRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -19,12 +19,13 @@ public class UserInforDetailService implements UserDetailsService {
     @Autowired
     private IUserRepository userRepository;
 
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser user = userRepository.findByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return new UserInforUserDetails(user);
+        return new UserInforUserDetails(user, user.getRoles());
     }
 }

@@ -1,6 +1,6 @@
 package com.codegym.fashionshop.service.authenticate.impl;
 
-import com.codegym.fashionshop.entities.AppRole;
+import com.codegym.fashionshop.entities.permission.AppRole;
 import com.codegym.fashionshop.repository.authenticate.IRoleRepository;
 import com.codegym.fashionshop.service.authenticate.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class RoleService implements IRoleService {
      */
     @Override
     public List<AppRole> findAll() {
-        return roleRepository.findAll();
+        return roleRepository.findAllRole();
     }
 
     /**
@@ -48,7 +48,7 @@ public class RoleService implements IRoleService {
      */
     @Override
     public AppRole findById(Long id) {
-        return roleRepository.findById(id).orElse(null);
+        return roleRepository.findRoleById(id).orElse(null);
     }
 
     /**
@@ -58,7 +58,7 @@ public class RoleService implements IRoleService {
      */
     @Override
     public void save(AppRole appRole) {
-        roleRepository.save(appRole.getRoleName());
+        roleRepository.saveRole(appRole.getRoleName());
     }
 
     /**
@@ -68,7 +68,7 @@ public class RoleService implements IRoleService {
      */
     @Override
     public void update(AppRole appRole) {
-        roleRepository.update(appRole.getRoleName(), appRole.getRoleId());
+        roleRepository.updateRole(appRole.getRoleName(), appRole.getRoleId());
     }
 
     /**
@@ -78,6 +78,6 @@ public class RoleService implements IRoleService {
      */
     @Override
     public void remove(Long id) {
-        roleRepository.delete(id);
+        roleRepository.deleteRole(id);
     }
 }
