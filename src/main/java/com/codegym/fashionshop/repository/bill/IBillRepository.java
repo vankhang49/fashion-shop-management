@@ -16,7 +16,6 @@ import java.util.List;
  * Provides methods for CRUD operations and custom queries related to bills.
  * Author: HoaNTT
  */
-@Repository
 public interface IBillRepository extends JpaRepository<Bill, Long> {
     /**
 

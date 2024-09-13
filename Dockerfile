@@ -20,7 +20,7 @@ RUN gradle clean build -x test
 FROM openjdk:21-jdk-slim
 WORKDIR /app
 
-COPY --from=build /app/build/libs/fashion-shop-0.0.1-SNAPSHOT.jar drcomputer.jar
+COPY --from=build /app/build/libs/fashion-shop-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","drcomputer.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]

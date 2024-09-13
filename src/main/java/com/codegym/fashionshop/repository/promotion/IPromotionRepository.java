@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Includes a custom query for retrieving a promotion by its promotion code.
  * Author: HoaNTT
  */
-@Repository
 public interface IPromotionRepository extends JpaRepository<Promotion,Long> {
     /**
      * Retrieves a promotion by its promotion code.

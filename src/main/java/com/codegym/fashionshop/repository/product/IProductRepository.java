@@ -20,7 +20,6 @@ import java.util.List;
  * Includes CRUD operations and custom queries for products.
  * Author: HoaNTT
  */
-@Repository
 public interface IProductRepository extends JpaRepository<Product, Long> {
 
     /**

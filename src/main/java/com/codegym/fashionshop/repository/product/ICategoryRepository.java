@@ -12,7 +12,6 @@ import java.util.List;
  * Includes a custom query for retrieving all categories.
  * Author: HoaNTT
  */
-@Repository
 public interface ICategoryRepository extends JpaRepository<Category, Long> {
 
     /**

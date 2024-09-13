@@ -14,7 +14,6 @@ import java.util.List;
  * Includes custom queries for retrieving product types by category.
  * Author: HoaNTT
  */
-@Repository
 public interface IProductTypeRepository extends JpaRepository<ProductType, Long> {
 
     /**

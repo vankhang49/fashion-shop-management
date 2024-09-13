@@ -20,7 +20,6 @@ import java.util.List;
  * Includes CRUD operations and custom queries for pricings.
  * Author: HoaNTT
  */
-@Repository
 public interface IPricingRepository extends JpaRepository<Pricing, Long> {
 
     /**

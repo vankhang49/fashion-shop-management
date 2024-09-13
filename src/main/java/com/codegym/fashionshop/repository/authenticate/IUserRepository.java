@@ -20,7 +20,6 @@ import java.util.Optional;
  * <p>
  * Author: KhangDV
  */
-@Repository
 public interface IUserRepository extends JpaRepository<AppUser, Long> {
     /**
      * Checks if an AppUser exists with the given username.
@@ -127,7 +126,6 @@ public interface IUserRepository extends JpaRepository<AppUser, Long> {
      * @param phoneNumber          the phone number of the new AppUser
      * @param email                the email address of the new AppUser
      * @param address              the address of the new AppUser
-     * @param roleId               the role ID of the new AppUser
      * @param accountNonExpired    whether the account is non-expired for the new AppUser
      * @param accountNonLocked     whether the account is non-locked for the new AppUser
      * @param credentialsNonExpired whether the credentials are non-expired for the new AppUser
@@ -165,7 +163,6 @@ public interface IUserRepository extends JpaRepository<AppUser, Long> {
      * @param phoneNumber          the updated phone number of the AppUser
      * @param email                the updated email address of the AppUser
      * @param address              the updated address of the AppUser
-     * @param roleId               the updated role ID of the AppUser
      * @param accountNonExpired    whether the updated account is non-expired for the AppUser
      * @param accountNonLocked     whether the updated account is non-locked for the AppUser
      * @param credentialsNonExpired whether the updated credentials are non-expired for the AppUser
