@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserInforDetailService implements UserDetailsService {
-
+    @Autowired
     private IUserRepository userRepository;
 
     @Override
