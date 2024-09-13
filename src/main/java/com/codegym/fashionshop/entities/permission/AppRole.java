@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 
 @Data
 @Builder
@@ -16,8 +15,7 @@ import java.io.Serializable;
 @Table(name = "app_role", //
         uniqueConstraints = { //
                 @UniqueConstraint(name = "APP_ROLE_UK", columnNames = "role_name") })
-public class AppRole implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class AppRole {
 
     /**
      * The unique identifier for the role.

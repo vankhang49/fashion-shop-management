@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -25,8 +24,7 @@ import java.util.Set;
         uniqueConstraints = { //
                 @UniqueConstraint(name = "APP_USER_UK", columnNames = "user_name"),
                 @UniqueConstraint(name = "APP_USER_CODE_UK", columnNames = "user_code")})
-public class AppUser implements Serializable {
-    private static final long serialVersionUID = 2L;
+public class AppUser {
 
     /**
      * The unique identifier for the user.
