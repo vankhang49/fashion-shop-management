@@ -25,12 +25,9 @@ public class Promotion {
     @NotBlank(message = "Tên khuyến mãi không được để trống!")
     private String promotionName;
     @Column(name = "promotion_code")
-//    @NotBlank(message = "Tên khuyến mãi không được để trống!")
     private String promotionCode;
 
     @Column(name = "discount")
-//    @Min(value = 0, message = "tỉ lệ không được nhỏ hơn 0 và phải từ 0 đến 1!")
-//    @Max(value = 1, message = "tỉ lệ không được lớn hơn 1 và phải từ 0 đến 1!")
     private Double discount;
 
     @Column(name = "start_day")

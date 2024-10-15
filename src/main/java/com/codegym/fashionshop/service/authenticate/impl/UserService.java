@@ -2,9 +2,7 @@ package com.codegym.fashionshop.service.authenticate.impl;
 
 import com.codegym.fashionshop.dto.request.AppUserRequest;
 import com.codegym.fashionshop.dto.respone.AuthenticationResponse;
-import com.codegym.fashionshop.entities.permission.AppRole;
 import com.codegym.fashionshop.entities.permission.AppUser;
-import com.codegym.fashionshop.repository.authenticate.IRoleRepository;
 import com.codegym.fashionshop.repository.authenticate.IUserRepository;
 import com.codegym.fashionshop.service.authenticate.IAppUserService;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Service implementation for managing {@link AppUser} entities.
